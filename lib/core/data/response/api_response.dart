@@ -1,7 +1,9 @@
 
 
 
-import 'package:courier_management_system/data/response/status.dart';
+
+
+import 'package:courier_management_system/core/data/response/status.dart';
 
 class ApiResponse<T>{
   Status? status;

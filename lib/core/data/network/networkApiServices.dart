@@ -3,11 +3,11 @@
 
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:courier_management_system/data/app_exceptions.dart';
-import 'package:courier_management_system/data/network/baseApiServices.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+
+import '../app_exceptions.dart';
+import 'baseApiServices.dart';
 class NetworkApiServices extends BaseApiServices{
 
 

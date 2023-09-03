@@ -33,30 +33,30 @@ class Utils {
         toastLength: Toast.LENGTH_SHORT);
   }
 
-  // static flushBarErrorMessage(String message, BuildContext context) {
-  //   showFlushbar(
-  //       context: context,
-  //       flushbar: Flushbar(
-  //         message: message,
-  //         forwardAnimationCurve: Curves.decelerate,
-  //         margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-  //         padding: EdgeInsets.all(15),
-  //         borderRadius: BorderRadius.circular(20),
-  //         duration: Duration(seconds: 3),
-  //         backgroundColor: Colors.black,
-  //         flushbarPosition: FlushbarPosition.TOP,
-  //         reverseAnimationCurve: Curves.easeInOut,
-  //         positionOffset: 10,
-  //         icon: Icon(
-  //           Icons.error,
-  //           size: 28,
-  //           color: Colors.white,
-  //         ),
-  //       )..show(context));
-  // }
+  static flushBarErrorMessage(String message, BuildContext context) {
+    showFlushbar(
+        context: context,
+        flushbar: Flushbar(
+          message: message,
+          forwardAnimationCurve: Curves.decelerate,
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: EdgeInsets.all(15),
+          borderRadius: BorderRadius.circular(20),
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.black,
+          flushbarPosition: FlushbarPosition.TOP,
+          reverseAnimationCurve: Curves.easeInOut,
+          positionOffset: 10,
+          icon: Icon(
+            Icons.error,
+            size: 28,
+            color: Colors.white,
+          ),
+        )..show(context));
+  }
 
   static snackBar(String message, BuildContext context) {
     return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(backgroundColor: Colors.red, content: Text(message)));
+        SnackBar(backgroundColor: Colors.white, content: Text(message)));
   }
 }
