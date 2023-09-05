@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:courier_management_system/core/utils/utils.dart';
+import 'package:courier_management_system/ui/viewModel/ToDoViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class AddTodoView extends StatefulWidget {
 
@@ -19,32 +21,28 @@ class _AddTodoViewState extends State<AddTodoView> {
   TextEditingController descriptionController = TextEditingController();
 
 
-  bool isEdit = false;
+  ToDoViewModel toDoViewModal = ToDoViewModel();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     final todo = widget.todo;
-    if(todo != null){
-      isEdit = true;
-    final title = todo['title'];
+    if (todo != null) {
+      // isEdit = true;
+      final title = todo['title'];
       final description = todo['description'];
 
       titleController.text = title;
       descriptionController.text = description;
-
-
-
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text(isEdit ?'Edit todo' : 'Add Notes' )),
+        title: Center(child: Text('Add Notes')),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -68,24 +66,26 @@ class _AddTodoViewState extends State<AddTodoView> {
           ),
           ElevatedButton(
               onPressed: () {
-              isEdit ? UpdateData() : submitData();
+                final title = titleController.text;
+                final description = titleController.text;
+                 submitData();
               },
-              child:  Padding(
+              child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(isEdit ?  'Update' : 'Submit'),
+                child: Text('Submit'),
               ))
         ],
       ),
     );
   }
 
-  Future<void> UpdateData()async{
+  Future<void> UpdateData() async {
     final title = titleController.text;
     final description = descriptionController.text;
 
     final todo = widget.todo;
     final id = todo?['_id'];
-    if(todo == null){
+    if (todo == null) {
       print('you can not call updated without todo data');
       return;
     }
@@ -100,15 +100,33 @@ class _AddTodoViewState extends State<AddTodoView> {
     final response = await http.put(uri, body: jsonEncode(body), headers: {
       'Content-Type': 'application/json',
     });
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       Utils.snackBar('Updated', context);
-    }else{
+    } else {
       Utils.snackBar('Error', context);
     }
-
   }
 
-  Future<void> submitData() async {
+  Future <void> submitData() async {
+    final title = titleController.text;
+    final description = titleController.text;
+
+    if (titleController.text.isEmpty) {
+      Utils.snackBar('please enter your notes first', context);
+    } else if (descriptionController.text.isEmpty) {
+      Utils.snackBar('please enter description', context);
+    } else {
+      Map data = {
+        "title": title,
+        "description": description,
+        "is_completed": false
+      };
+      toDoViewModal.postTodoApi(data);
+    }
+  }
+
+
+  Future<void> submitDataa() async {
     final title = titleController.text;
     final description = descriptionController.text;
 
@@ -133,4 +151,5 @@ class _AddTodoViewState extends State<AddTodoView> {
       print('Creation Failed');
     }
   }
+
 }

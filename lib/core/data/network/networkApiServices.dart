@@ -8,18 +8,16 @@ import 'package:http/http.dart';
 
 import '../app_exceptions.dart';
 import 'baseApiServices.dart';
-class NetworkApiServices extends BaseApiServices{
-
+class NetworkApiServices extends BaseApiServices {
 
 
   @override
   Future getGetApiResponse(String url) async {
     dynamic responseJson;
     try {
-      final response = await http.get(Uri.parse(url)).timeout(Duration(seconds: 10));
-      print(url.toString());
-      print(response.toString());
-       responseJson = returnResponse(response);
+      final response = await http.get(Uri.parse(url)).timeout(
+          Duration(seconds: 20));
+      responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }
@@ -27,16 +25,12 @@ class NetworkApiServices extends BaseApiServices{
   }
 
 
-
-
   @override
-  Future getPostApiResponse(String url, dynamic data) async{
+  Future getGetApiResponseWithHeader(String url) async {
     dynamic responseJson;
     try {
-     Response response =await post(
-       Uri.parse(url),
-       body: data
-     ).timeout(Duration(seconds: 20));
+      final response = await http.get(Uri.parse(url)).timeout(
+          Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -46,8 +40,47 @@ class NetworkApiServices extends BaseApiServices{
 
 
 
-    dynamic returnResponse(http.Response response){
-    switch(response.statusCode){
+
+
+  @override
+  Future getPostApiResponse(String url, dynamic data) async {
+    dynamic responseJson;
+    try {
+      Response response = await post(
+          Uri.parse(url),
+          body: data
+      ).timeout(Duration(seconds: 20));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return responseJson;
+  }
+
+
+  @override
+  Future getPostApiResponseWithHeader(String url, dynamic data, String headers) async{
+    dynamic responseJson;
+    try {
+      Response response =await post(
+          Uri.parse(url),
+          body: data,
+          headers:{
+            'Content-Type': headers
+          }
+      ).timeout(Duration(seconds: 20));
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
+    }
+    return responseJson;
+  }
+
+
+
+
+  dynamic returnResponse(http.Response response) {
+    switch (response.statusCode) {
       case 200:
         dynamic responseJson = jsonDecode(response.body);
         return responseJson;
@@ -57,13 +90,15 @@ class NetworkApiServices extends BaseApiServices{
       case 404:
         throw UnauthorizedtException(response.body.toString());
       default:
-        throw FetchDataException('Error occured while communicating with server'+ 'with status code'+
-            response.statusCode.toString());
+        throw FetchDataException(
+            'Error occured while communicating with server' +
+                'with status code' +
+                response.statusCode.toString());
     }
-
-    }
-
   }
+
+
+}
 
 
 

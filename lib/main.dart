@@ -1,4 +1,5 @@
 import 'package:courier_management_system/ui/view/splashView.dart';
+import 'package:courier_management_system/ui/viewModel/ToDoViewModel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,20 +16,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // return MultiProvider(
-    //   providers: [
-    //
-    // ],
-    //   child:
-      return MaterialApp(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_)=> ToDoViewModel()),
+    ],
+      child:MaterialApp(
          home: SplashView(),
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      // initialRoute: RoutesName.splash,
-      // onGenerateRoute: Routes.generateRoute ,
+      initialRoute: RoutesName.splash,
+      onGenerateRoute: Routes.generateRoute ,
         debugShowCheckedModeBanner: false,
 
 
+    )
     );
   }
 }
