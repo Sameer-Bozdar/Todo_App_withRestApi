@@ -13,8 +13,9 @@ class AppUrl{
   static var postTodoDataUrl = 'https://api.nstack.in/v1/todos';
 
   // delete Data Endpoint
+  static var deleteTodoDataUrl = 'https://api.nstack.in/v1/todos/';
 
-  // static var deleteTodoDataUrl = 'https://api.nstack.in/v1/todos$id';
+
 
 
 

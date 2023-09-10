@@ -1,10 +1,15 @@
 class ImageModel {
+
+
   int? total;
   int? totalHits;
   List<Hits>? hits;
 
   ImageModel({this.total, this.totalHits, this.hits});
 
+
+  // Deserialization
+  // Map To Object
   ImageModel.fromJson(Map<String, dynamic> json) {
     total = json['total'];
     totalHits = json['totalHits'];
@@ -16,6 +21,9 @@ class ImageModel {
     }
   }
 
+
+  // Serialization
+  // Object to Map
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['total'] = total;

@@ -1,155 +1,97 @@
-import 'dart:convert';
-
+import 'dart:async';
+import 'package:courier_management_system/core/utils/routes/routes_name.dart';
 import 'package:courier_management_system/core/utils/utils.dart';
-import 'package:courier_management_system/ui/viewModel/ToDoViewModel.dart';
+import 'package:courier_management_system/ui/view/todo_listView.dart';
+import 'package:courier_management_system/ui/viewModel/fetchDataViewModel.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+
+import '../viewModel/postDataViewModel.dart';
+import '../viewModel/putDataViewModel.dart';
+
 
 class AddTodoView extends StatefulWidget {
 
-  final Map? todo;
 
-  const AddTodoView({super.key,this.todo});
+
+  const AddTodoView({super.key});
+
+
 
   @override
   State<AddTodoView> createState() => _AddTodoViewState();
 }
+
 
 class _AddTodoViewState extends State<AddTodoView> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
 
-  ToDoViewModel toDoViewModal = ToDoViewModel();
+  PostDataViewModel postDataViewModal = PostDataViewModel();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    final todo = widget.todo;
-    if (todo != null) {
-      // isEdit = true;
-      final title = todo['title'];
-      final description = todo['description'];
 
-      titleController.text = title;
-      descriptionController.text = description;
-    }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text('Add Notes')),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        children: [
-          TextFormField(
-            controller: titleController,
-            decoration: const InputDecoration(hintText: 'Title'),
-          ),
-          const SizedBox(height: 20),
-          TextFormField(
-            controller: descriptionController,
-            decoration: const InputDecoration(
-              hintText: 'Description',
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Center(child: Text('Add Notes')),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          children: [
+            TextFormField(
+              controller: titleController,
+              decoration: const InputDecoration(hintText: 'Title'),
             ),
-            maxLines: 8,
-            minLines: 5,
-            keyboardType: TextInputType.multiline,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-              onPressed: () {
-                final title = titleController.text;
-                final description = titleController.text;
-                 submitData();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text('Submit'),
-              ))
-        ],
-      ),
-    );
-  }
-
-  Future<void> UpdateData() async {
-    final title = titleController.text;
-    final description = descriptionController.text;
-
-    final todo = widget.todo;
-    final id = todo?['_id'];
-    if (todo == null) {
-      print('you can not call updated without todo data');
-      return;
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: descriptionController,
+              decoration: const InputDecoration(
+                hintText: 'Description',
+              ),
+              maxLines: 8,
+              minLines: 5,
+              keyboardType: TextInputType.multiline,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  submitData().then((value) {
+                    Timer(Duration(seconds: 1), () {
+                      Navigator.pushNamed(context, RoutesName.todoList);
+                    });
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text('Submit'),
+                ))
+          ],
+        ),
+      );
     }
 
-    final body = {
-      "title": title,
-      "description": description,
-      "is_completed": false
-    };
-    final url = 'https://api.nstack.in/v1/todos/$id';
-    final uri = Uri.parse(url);
-    final response = await http.put(uri, body: jsonEncode(body), headers: {
-      'Content-Type': 'application/json',
-    });
-    if (response.statusCode == 200) {
-      Utils.snackBar('Updated', context);
-    } else {
-      Utils.snackBar('Error', context);
+
+    Future <void> submitData() async {
+      final title = titleController.text;
+      final description = descriptionController.text;
+      if (titleController.text.isEmpty) {
+        Utils.snackBar('please enter your notes first', context);
+      } else if (descriptionController.text.isEmpty) {
+        Utils.snackBar('please enter description', context);
+      } else {
+        dynamic data = {
+          "title": title,
+          "description": description,
+          "is_completed": false
+        };
+        postDataViewModal.postTodoApi(data);
+      }
+
     }
-  }
 
-  Future <void> submitData() async {
-    final title = titleController.text;
-    final description = titleController.text;
-
-    if (titleController.text.isEmpty) {
-      Utils.snackBar('please enter your notes first', context);
-    } else if (descriptionController.text.isEmpty) {
-      Utils.snackBar('please enter description', context);
-    } else {
-      Map data = {
-        "title": title,
-        "description": description,
-        "is_completed": false
-      };
-      toDoViewModal.postTodoApi(data);
-    }
-  }
-
-
-  Future<void> submitDataa() async {
-    final title = titleController.text;
-    final description = descriptionController.text;
-
-    final body = {
-      "title": title,
-      "description": description,
-      "is_completed": false
-    };
-    final url = 'https://api.nstack.in/v1/todos';
-    final uri = Uri.parse(url);
-    final response = await http.post(uri, body: jsonEncode(body), headers: {
-      'Content-Type': 'application/json',
-    });
-
-    if (response.statusCode == 201) {
-      titleController.text = '';
-      descriptionController.text = '';
-      Utils.snackBar('Creation Success', context);
-      print('Creation Success');
-    } else {
-      Utils.snackBar('Creation Failed', context);
-      print('Creation Failed');
-    }
-  }
 
 }

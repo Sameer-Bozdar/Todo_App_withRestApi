@@ -5,78 +5,93 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-
 import '../app_exceptions.dart';
 import 'baseApiServices.dart';
 class NetworkApiServices extends BaseApiServices {
 
 
+
+  // fetching  the data
   @override
   Future getGetApiResponse(String url) async {
-    dynamic responseJson;
+    var responseJson;
     try {
-      final response = await http.get(Uri.parse(url)).timeout(
-          Duration(seconds: 20));
+      dynamic response = await http.get(Uri.parse(url));
       responseJson = returnResponse(response);
+      return responseJson;
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }
-    return responseJson;
-  }
-
-
-  @override
-  Future getGetApiResponseWithHeader(String url) async {
-    dynamic responseJson;
-    try {
-      final response = await http.get(Uri.parse(url)).timeout(
-          Duration(seconds: 10));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException('No Internet Connection');
-    }
-    return responseJson;
   }
 
 
 
-
-
+  // Posting the data
   @override
-  Future getPostApiResponse(String url, dynamic data) async {
+  Future getPostApiResponseWithHeader(String url, dynamic data) async {
     dynamic responseJson;
+
+    dynamic jsonBody = jsonEncode(data);
     try {
-      Response response = await post(
-          Uri.parse(url),
-          body: data
+      Response response = await post(Uri.parse(url), body: jsonBody, headers: <String, String>{"Content-Type": "application/json"}
       ).timeout(Duration(seconds: 20));
       responseJson = returnResponse(response);
+      // print('response of data in Network Class ${responseJson.toString()}');
     } on SocketException {
       throw FetchDataException('No Internet Connection');
     }
     return responseJson;
   }
 
+  // deleting the data by id
 
-  @override
-  Future getPostApiResponseWithHeader(String url, dynamic data, String headers) async{
-    dynamic responseJson;
+  Future deleteDataById(String url, String id) async {
     try {
-      Response response =await post(
-          Uri.parse(url),
-          body: data,
-          headers:{
-            'Content-Type': headers
-          }
-      ).timeout(Duration(seconds: 20));
-      responseJson = returnResponse(response);
-    } on SocketException {
-      throw FetchDataException('No Internet Connection');
+      final response = await http.delete(Uri.parse(url + id));
+
+      if (response.statusCode == 200) {
+        // Successful deletion
+        print('Data deleted successfully');
+      } else if (response.statusCode == 404) {
+        // Data not found
+        print('Data with ID $id not found');
+      } else {
+        // Handle other status codes as needed
+        print('Failed to delete data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print(e.toString());
     }
-    return responseJson;
   }
 
 
+  Future updateDataById(String url, String id, dynamic data)async {
+
+    try{
+
+      String jsonBody = jsonEncode(data);
+        final response = await put(Uri.parse(url+id), body: jsonBody, headers: {
+          'Content-Type': 'application/json',
+        });
+        print(jsonBody);
+
+        if (response.statusCode == 200) {
+          // Successful deletion
+          print('Data updated successfully');
+        } else if (response.statusCode == 404) {
+          // Data not found
+          print('Data with ID $id not found');
+        } else {
+          // Handle other status codes as needed
+          print('Failed to delete data. Status code: ${response.statusCode}');
+        }
+
+    }on SocketException{
+      throw FetchDataException('No Internet Connection');
+    }
+
+
+  }
 
 
   dynamic returnResponse(http.Response response) {
@@ -85,6 +100,9 @@ class NetworkApiServices extends BaseApiServices {
         dynamic responseJson = jsonDecode(response.body);
         return responseJson;
 
+      case 201:
+        dynamic responseJson = jsonEncode(response.body);
+        return responseJson;
       case 400:
         throw BadRequestException(response.body.toString());
       case 404:
@@ -98,7 +116,10 @@ class NetworkApiServices extends BaseApiServices {
   }
 
 
+
+
 }
+
 
 
 
