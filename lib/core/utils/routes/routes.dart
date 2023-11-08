@@ -1,7 +1,6 @@
 
 import 'package:courier_management_system/core/utils/routes/routes_name.dart';
-import 'package:courier_management_system/ui/view/add_todoView.dart';
-import 'package:courier_management_system/ui/view/todo_listView.dart';
+import 'package:courier_management_system/ui/view/CatsView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -18,12 +17,9 @@ class Routes {
       case RoutesName.splash:
         return MaterialPageRoute(
             builder: (BuildContext context) => SplashView());
-      case RoutesName.todoList:
+      case RoutesName.catsView:
         return MaterialPageRoute(
-            builder: (BuildContext context) => ToDoListView());
-      case RoutesName.addTodo:
-        return MaterialPageRoute(
-            builder: (BuildContext context) => AddTodoView());
+            builder: (BuildContext context) => CatsView());
       default:
        return MaterialPageRoute(builder: (_) {
           return Scaffold(

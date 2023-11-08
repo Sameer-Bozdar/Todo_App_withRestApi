@@ -3,101 +3,45 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:courier_management_system/core/model/CatsModal.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import '../app_exceptions.dart';
 import 'baseApiServices.dart';
 class NetworkApiServices extends BaseApiServices {
 
 
 
-  // fetching  the data
-  @override
-  Future getGetApiResponse(String url) async {
-    var responseJson;
-    try {
-      dynamic response = await http.get(Uri.parse(url));
-      responseJson = returnResponse(response);
-      return responseJson;
-    } on SocketException {
-      throw FetchDataException('No Internet Connection');
-    }
-  }
-
 
 
   // Posting the data
   @override
-  Future getPostApiResponseWithHeader(String url, dynamic data) async {
-    dynamic responseJson;
+  Future getApiResponse(String url, String data) async {
+    List <CatsModel> catList = [];
+var responseJson;
+    print('${data} in the network class');
 
-    dynamic jsonBody = jsonEncode(data);
-    try {
-      Response response = await post(Uri.parse(url), body: jsonBody, headers: <String, String>{"Content-Type": "application/json"}
-      ).timeout(Duration(seconds: 20));
-      responseJson = returnResponse(response);
-      // print('response of data in Network Class ${responseJson.toString()}');
-    } on SocketException {
-      throw FetchDataException('No Internet Connection');
-    }
-    return responseJson;
+    final headers = {"X-API-KEY" : "/H1rWHk83PHQdRuy1kM+iA==2tSdODS7qOLGW6Z0"};
+        dynamic queryParameter = {'name': data,};
+        var uri = Uri.parse(url).replace(queryParameters: queryParameter);
+    print(uri.toString());
+         final response = await http.get(uri,headers: headers
+      );
+if(response.statusCode == 200){
+ var catsListData = jsonDecode(response.body.toString());
+ for(Map i in catsListData){
+   print('${catList[0].name} +========+++++++++++++++++++');
+   catList.add(CatsModel.fromJson(i));
+ }
+}
+print("responseJSon=======================>>>>>>>>>> "+responseJson.toString());
+print(catList[0].name);
+        return catList;
   }
-
-  // deleting the data by id
-
-  Future deleteDataById(String url, String id) async {
-    try {
-      final response = await http.delete(Uri.parse(url + id));
-
-      if (response.statusCode == 200) {
-        // Successful deletion
-        print('Data deleted successfully');
-      } else if (response.statusCode == 404) {
-        // Data not found
-        print('Data with ID $id not found');
-      } else {
-        // Handle other status codes as needed
-        print('Failed to delete data. Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-
-  Future updateDataById(String url, String id, dynamic data)async {
-
-    try{
-
-      String jsonBody = jsonEncode(data);
-        final response = await put(Uri.parse(url+id), body: jsonBody, headers: {
-          'Content-Type': 'application/json',
-        });
-        print(jsonBody);
-
-        if (response.statusCode == 200) {
-          // Successful deletion
-          print('Data updated successfully');
-        } else if (response.statusCode == 404) {
-          // Data not found
-          print('Data with ID $id not found');
-        } else {
-          // Handle other status codes as needed
-          print('Failed to delete data. Status code: ${response.statusCode}');
-        }
-
-    }on SocketException{
-      throw FetchDataException('No Internet Connection');
-    }
-
-
-  }
-
 
   dynamic returnResponse(http.Response response) {
     switch (response.statusCode) {
       case 200:
-        dynamic responseJson = jsonDecode(response.body);
+        dynamic responseJson = jsonDecode(response.body.toString());
         return responseJson;
 
       case 201:

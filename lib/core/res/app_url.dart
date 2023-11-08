@@ -7,7 +7,7 @@ class AppUrl{
  // final String id;
 
  // get Data EndPoint
-  static var getTodoDataUrl = 'https://api.nstack.in/v1/todos';
+  static var catsBaseUrl = 'https://api.api-ninjas.com/v1/cats?name=';
 
   // post Data EndPoint
   static var postTodoDataUrl = 'https://api.nstack.in/v1/todos';
